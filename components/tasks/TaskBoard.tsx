@@ -61,9 +61,9 @@ function SortableTaskCard({
         opacity: isDragging ? 0.5 : 1,
         display: "flex", alignItems: "center", gap: 10,
         padding: "11px 14px", borderRadius: 10, marginBottom: 6,
-        background: isDone ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)",
-        border: isDone ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(255,255,255,0.08)",
-        opacity: isDone ? 0.55 : 1, cursor: "default",
+       background: isDone ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)",
+border: isDone ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(255,255,255,0.08)",
+cursor: "default",
       }}
     >
       {/* Drag handle */}
