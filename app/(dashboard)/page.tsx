@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { useTasks, selectFocusTasks, selectOverdueTasks, selectCompletedToday } from "@/hooks/useTasks";
 import type { Task, Priority, TaskStatus } from "@/types/database";
 
+export const dynamic = "force-dynamic";
+
 // ─── Types ────────────────────────────────────────────────────
 interface CalendarEvent {
   time: string;
