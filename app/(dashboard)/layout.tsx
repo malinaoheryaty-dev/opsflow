@@ -5,15 +5,16 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
+import { KuromiIcon, NAV_ICONS } from "@/components/ui/KuromiIcons";
 
 const NAV = [
-  { href: "/",          label: "Dashboard", icon: "⊞" },
-  { href: "/tasks",     label: "Tasks",     icon: "✓" },
-  { href: "/notes",     label: "Notes",     icon: "✏" },
-  { href: "/discord",   label: "Discord",   icon: "💬" },
-  { href: "/team",      label: "Team",      icon: "👥" },
-  { href: "/reports",   label: "Reports",   icon: "📊" },
-  { href: "/settings",  label: "Settings",  icon: "⚙" },
+  { href: "/",         label: "Dashboard" },
+  { href: "/tasks",    label: "Tasks" },
+  { href: "/notes",    label: "Notes" },
+  { href: "/discord",  label: "Discord" },
+  { href: "/team",     label: "Team" },
+  { href: "/reports",  label: "Reports" },
+  { href: "/settings", label: "Settings" },
 ];
 
 const INTEGRATIONS = [
@@ -96,8 +97,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 fontSize: 13.5, fontWeight: active ? 600 : 400,
                 transition: "all 0.15s",
               }}>
-                <span style={{ fontSize: 14, width: 18, textAlign: "center" }}>{item.icon}</span>
-                {item.label}
+                <KuromiIcon
+  name={NAV_ICONS[item.href]}
+  size={16}
+  color={active ? "#9b5de5" : "rgba(224,210,255,0.35)"}
+/>
+{item.label}
               </a>
             );
           })}
@@ -128,7 +133,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               color: "#A78BFA", fontSize: 13, fontWeight: 600,
             }}
           >
-            <span>✦</span> AI Assistant
+            <KuromiIcon name="ai" size={16} color="#c084fc" /> AI Assistant
           </button>
 
           {/* User */}
@@ -150,7 +155,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <button onClick={handleSignOut} title="Sign out" style={{
               background: "none", border: "none", color: "rgba(255,255,255,0.2)",
               fontSize: 14, cursor: "pointer",
-            }}>↩</button>
+            }}><KuromiIcon name="signout" size={14} color="rgba(224,210,255,0.25)" /></button>
           </div>
         </div>
       </aside>
