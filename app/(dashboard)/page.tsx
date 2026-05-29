@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useTasks, selectFocusTasks, selectOverdueTasks, selectCompletedToday } from "@/hooks/useTasks";
 import GmailWidget from "@/components/gmail/GmailWidget";
 import type { Task, Priority } from "@/types/database";
+import React, { useEffect, useState, Suspense, useCallback } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -368,7 +369,7 @@ function AIAssistantPanel() {
 }
 
 // ─── Floating quick add ───────────────────────────────────────
-function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
+function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement> })
   const { createTask } = useTasks();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -420,8 +421,8 @@ function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButt
       )}
       {/* FAB */}
       <button
-        ref={triggerRef}
-        onClick={() => setOpen(o => !o)}
+  ref={(el) => { triggerRef.current = el; }}
+  onClick={() => setOpen(o => !o)}
         style={{ position: "fixed", bottom: 32, right: 32, width: 56, height: 56, borderRadius: "50%", border: "none", zIndex: 100, background: `linear-gradient(135deg, ${K.purple}, ${K.pink})`, color: "#fff", fontSize: 28, cursor: "pointer", boxShadow: `0 6px 28px rgba(155,93,229,0.55)`, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s" }}
       >
         {open ? "×" : "+"}
