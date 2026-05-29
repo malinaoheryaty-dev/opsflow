@@ -1,26 +1,231 @@
-@import "tailwindcss";
+/* SAVE AS: app/globals.css */
+/* Replace your existing globals.css with this */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ─── Reset ──────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #0d0b14;
+  font-family: 'DM Sans', sans-serif;
+  color: #f5f0ff;
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(155,93,229,0.3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(155,93,229,0.6); }
+
+/* ─── Animations ─────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(155,93,229,0.3); }
+  50%       { box-shadow: 0 0 20px rgba(255,110,180,0.5); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(100%); }
+}
+
+@keyframes checkPop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes starPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4) rotate(20deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-30px); }
+}
+
+/* ─── Animation utility classes ──────────────────────────────── */
+.animate-fade-in       { animation: fadeIn 0.3s ease forwards; }
+.animate-fade-in-left  { animation: fadeInLeft 0.3s ease forwards; }
+.animate-fade-in-right { animation: fadeInRight 0.3s ease forwards; }
+.animate-fade-in-scale { animation: fadeInScale 0.25s ease forwards; }
+.animate-slide-up      { animation: slideUp 0.35s ease forwards; }
+.animate-slide-down    { animation: slideDown 0.25s ease forwards; }
+.animate-pulse-slow    { animation: pulse 2s ease-in-out infinite; }
+.animate-spin          { animation: spin 1s linear infinite; }
+.animate-bounce-slow   { animation: bounce 2s ease-in-out infinite; }
+.animate-glow          { animation: glow 2s ease-in-out infinite; }
+
+/* ─── Staggered children ─────────────────────────────────────── */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 60ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 180ms; }
+.stagger > *:nth-child(5) { animation-delay: 240ms; }
+.stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ─── Skeleton loading ───────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(155,93,229,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ─── Hover cards ────────────────────────────────────────────── */
+.hover-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(155,93,229,0.3) !important;
+  box-shadow: 0 8px 30px rgba(155,93,229,0.12);
+}
+
+/* ─── Hover buttons ──────────────────────────────────────────── */
+.hover-btn {
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+}
+.hover-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+.hover-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ─── Nav items ──────────────────────────────────────────────── */
+.nav-item {
+  transition: all 0.15s ease;
+}
+.nav-item:hover {
+  background: rgba(155,93,229,0.08) !important;
+  color: rgba(224,210,255,0.8) !important;
+  transform: translateX(2px);
+}
+
+/* ─── Task row ───────────────────────────────────────────────── */
+.task-row {
+  transition: all 0.15s ease;
+}
+.task-row:hover {
+  background: rgba(30,24,48,0.9) !important;
+  border-color: rgba(155,93,229,0.25) !important;
+  transform: translateX(2px);
+}
+
+/* ─── Checkbox animation ─────────────────────────────────────── */
+.checkbox-done {
+  animation: checkPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ─── Star animation ─────────────────────────────────────────── */
+.star-pop {
+  animation: starPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ─── Toast ──────────────────────────────────────────────────── */
+.toast-enter { animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.toast-exit  { animation: toastOut 0.25s ease forwards; }
+
+/* ─── Page transition ────────────────────────────────────────── */
+.page-enter {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* ─── Input focus ────────────────────────────────────────────── */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: rgba(155,93,229,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(155,93,229,0.1);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ─── Select options ─────────────────────────────────────────── */
+select option { background: #1e1830; color: #f5f0ff; }
+
+/* ─── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar-desktop { display: none !important; }
+  .mobile-nav      { display: flex !important; }
+  .main-content    { padding-bottom: 80px !important; padding-left: 16px !important; padding-right: 16px !important; padding-top: 16px !important; }
+  .dashboard-grid  { grid-template-columns: 1fr !important; }
+  .stats-row       { grid-template-columns: 1fr 1fr !important; display: grid !important; }
+  .hide-mobile     { display: none !important; }
+}
+
+@media (min-width: 769px) {
+  .mobile-nav { display: none !important; }
 }
