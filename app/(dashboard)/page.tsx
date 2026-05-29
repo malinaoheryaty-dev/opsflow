@@ -368,7 +368,7 @@ function AIAssistantPanel() {
 }
 
 // ─── Floating quick add ───────────────────────────────────────
-function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
+function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement> }) {
   const { createTask } = useTasks();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
