@@ -1,7 +1,6 @@
 "use client";
 // SAVE AS: app/(dashboard)/page.tsx
 
-import { useEffect, useState, Suspense, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTasks, selectFocusTasks, selectOverdueTasks, selectCompletedToday } from "@/hooks/useTasks";
 import GmailWidget from "@/components/gmail/GmailWidget";
