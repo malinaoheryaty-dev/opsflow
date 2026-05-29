@@ -1,11 +1,11 @@
 "use client";
 // SAVE AS: app/(dashboard)/page.tsx
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTasks, selectFocusTasks, selectOverdueTasks, selectCompletedToday } from "@/hooks/useTasks";
 import GmailWidget from "@/components/gmail/GmailWidget";
-import type { Task, Priority, TaskStatus } from "@/types/database";
+import type { Task, Priority } from "@/types/database";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +27,6 @@ const K = {
   green:    "#4ade80",
   red:      "#f87171",
   yellow:   "#fbbf24",
-  chart1:   "#9b5de5",
-  chart2:   "#ff6eb4",
 };
 
 const PRIORITY_CFG: Record<Priority, { label: string; color: string; bg: string }> = {
@@ -37,6 +35,48 @@ const PRIORITY_CFG: Record<Priority, { label: string; color: string; bg: string 
   medium: { label: "Medium", color: K.purple2, bg: "rgba(192,132,252,0.12)" },
   low:    { label: "Low",    color: K.muted,   bg: "rgba(224,210,255,0.07)" },
 };
+
+// ─── Skeleton loader ──────────────────────────────────────────
+function SkeletonDashboard() {
+  return (
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`
+        @keyframes shimmer {
+          0%   { opacity: 0.4; }
+          50%  { opacity: 0.8; }
+          100% { opacity: 0.4; }
+        }
+        .skeleton { animation: shimmer 1.6s ease-in-out infinite; }
+      `}</style>
+
+      {/* Header skeleton */}
+      <div style={{ marginBottom: 24 }}>
+        <div className="skeleton" style={{ height: 32, width: 280, background: K.surface2, borderRadius: 10, marginBottom: 8 }} />
+        <div className="skeleton" style={{ height: 14, width: 220, background: K.surface2, borderRadius: 6 }} />
+      </div>
+
+      {/* Stat cards skeleton */}
+      <div style={{ display: "flex", gap: 14, marginBottom: 20 }}>
+        {[1,2,3,4].map(i => (
+          <div key={i} className="skeleton" style={{ flex: 1, height: 96, background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18 }} />
+        ))}
+      </div>
+
+      {/* Grid skeleton */}
+      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr 300px", gap: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="skeleton" style={{ height: 260, background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18 }} />
+          <div className="skeleton" style={{ height: 200, background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18 }} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="skeleton" style={{ height: 180, background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18 }} />
+          <div className="skeleton" style={{ height: 300, background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18 }} />
+        </div>
+        <div className="skeleton" style={{ height: 500, background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18 }} />
+      </div>
+    </div>
+  );
+}
 
 // ─── Mini Calendar ────────────────────────────────────────────
 function MiniCalendar() {
@@ -47,9 +87,13 @@ function MiniCalendar() {
   const monthName = now.toLocaleString("default", { month: "long" });
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const days: (number | null)[] = [...Array(firstDay).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+  const days: (number | null)[] = [
+    ...Array(firstDay).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
   while (days.length % 7 !== 0) days.push(null);
 
+  // TODO: Replace with real Calendar API events
   const EVENTS = [
     { time: "10:00 AM", title: "Team Standup" },
     { time: "02:00 PM", title: "Product Review" },
@@ -58,7 +102,6 @@ function MiniCalendar() {
 
   return (
     <div>
-      {/* Month header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 20 }}>🖤</span>
@@ -67,14 +110,12 @@ function MiniCalendar() {
         <span style={{ color: K.pink, fontSize: 16 }}>🩷</span>
       </div>
 
-      {/* Day headers */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", marginBottom: 6 }}>
         {["SUN","MON","TUE","WED","THU","FRI","SAT"].map((d, i) => (
           <div key={i} style={{ textAlign: "center", fontSize: 9, color: K.muted, fontWeight: 700, letterSpacing: "0.05em", paddingBottom: 6 }}>{d}</div>
         ))}
       </div>
 
-      {/* Days grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px 0", marginBottom: 16 }}>
         {days.map((d, i) => (
           <div key={i} style={{
@@ -87,7 +128,6 @@ function MiniCalendar() {
         ))}
       </div>
 
-      {/* Events */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {EVENTS.map((evt, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -139,9 +179,9 @@ function DonutChart({ completed, inProgress, pending }: { completed: number; inP
   const circumference = 2 * Math.PI * r;
 
   const segments = [
-    { value: completed, color: K.pink, label: "Completed" },
-    { value: inProgress, color: K.purple, label: "In Progress" },
-    { value: pending, color: K.surface3, label: "Pending" },
+    { value: completed,  color: K.pink,    label: "Completed"   },
+    { value: inProgress, color: K.purple,  label: "In Progress" },
+    { value: pending,    color: K.surface3, label: "Pending"    },
   ];
 
   let offset = 0;
@@ -213,8 +253,8 @@ function TaskRow({ task, onToggle }: { task: Task; onToggle: (id: string) => voi
           {task.title}
         </div>
         {task.due_date && (
-          <div style={{ fontSize: 10.5, color: K.muted }}>
-            {task.due_date === today ? "Due today" : task.due_date.slice(5)}
+          <div style={{ fontSize: 10.5, color: task.due_date < today && !isDone ? K.red : K.muted }}>
+            {task.due_date === today ? "Due today" : task.due_date < today && !isDone ? `Overdue · ${task.due_date.slice(5)}` : task.due_date.slice(5)}
           </div>
         )}
       </div>
@@ -229,7 +269,10 @@ function TaskRow({ task, onToggle }: { task: Task; onToggle: (id: string) => voi
 }
 
 // ─── Stat card ────────────────────────────────────────────────
-function StatCard({ label, value, sub, color, icon, trend }: { label: string; value: string | number; sub: string; color: string; icon: string; trend?: string }) {
+function StatCard({ label, value, sub, color, icon, trend }: {
+  label: string; value: string | number; sub: string;
+  color: string; icon: string; trend?: string;
+}) {
   return (
     <div style={{ background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18, padding: "20px 22px", flex: 1, position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", top: 16, right: 16, width: 42, height: 42, borderRadius: 12, background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{icon}</div>
@@ -245,22 +288,24 @@ function StatCard({ label, value, sub, color, icon, trend }: { label: string; va
 function AIAssistantPanel() {
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState([
-    { role: "assistant", text: "Hey there! I'm your Kuromi AI 🖤🩷\nHow can I help you slay your day?" }
+    { role: "assistant", text: "Hey there! I'm your Kuromi AI 🖤🩷\nHow can I help you slay your day?" },
   ]);
   const [loading, setLoading] = useState(false);
 
   const QUICK = ["Summarize today's tasks", "Show project updates", "Draft an email", "Generate report"];
 
-  const send = async (text: string) => {
+  const send = useCallback(async (text: string) => {
     if (!text.trim() || loading) return;
     setInput("");
     setMsgs(m => [...m, { role: "user", text }]);
     setLoading(true);
+    // TODO: Replace with real Claude API call
+    // const res = await fetch("/api/ai", { method: "POST", body: JSON.stringify({ message: text }) });
     setTimeout(() => {
       setMsgs(m => [...m, { role: "assistant", text: "I'm your AI assistant! In the full version, I'll connect to Claude API to give real answers based on your tasks, emails, and Discord. 🖤" }]);
       setLoading(false);
     }, 1000);
-  };
+  }, [loading]);
 
   return (
     <div style={{ background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18, padding: 20, display: "flex", flexDirection: "column", height: "100%" }}>
@@ -275,12 +320,12 @@ function AIAssistantPanel() {
         <span style={{ color: K.yellow, fontSize: 16 }}>✦</span>
       </div>
 
-      {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", marginBottom: 12, display: "flex", flexDirection: "column", gap: 8, minHeight: 100 }}>
         {msgs.map((m, i) => (
           <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
             <div style={{
-              maxWidth: "88%", padding: "9px 13px", borderRadius: m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+              maxWidth: "88%", padding: "9px 13px",
+              borderRadius: m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
               background: m.role === "user" ? `linear-gradient(135deg, ${K.purple}, ${K.pink})` : K.surface2,
               color: K.white, fontSize: 12.5, lineHeight: 1.6,
               border: m.role === "assistant" ? `1px solid ${K.border}` : "none",
@@ -288,10 +333,18 @@ function AIAssistantPanel() {
             }}>{m.text}</div>
           </div>
         ))}
-        {loading && <div style={{ color: K.muted, fontSize: 12, padding: "4px 0" }}>🖤 Thinking...</div>}
+        {loading && (
+          <div style={{ display: "flex", gap: 4, padding: "4px 0" }}>
+            {[0,1,2].map(i => (
+              <div key={i} style={{
+                width: 6, height: 6, borderRadius: "50%", background: K.purple,
+                animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
+              }} />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Quick actions */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 10 }}>
         {QUICK.map(q => (
           <button key={q} onClick={() => send(q)} style={{ background: K.surface2, border: `1px solid ${K.border}`, borderRadius: 8, padding: "6px 8px", color: K.muted, fontSize: 11, cursor: "pointer", textAlign: "left" }}>
@@ -300,7 +353,6 @@ function AIAssistantPanel() {
         ))}
       </div>
 
-      {/* Input */}
       <div style={{ display: "flex", gap: 8 }}>
         <input
           value={input}
@@ -309,20 +361,27 @@ function AIAssistantPanel() {
           placeholder="Ask Kuromi anything..."
           style={{ flex: 1, background: K.surface2, border: `1px solid ${K.border}`, borderRadius: 10, padding: "9px 12px", color: K.white, fontSize: 12.5, outline: "none", fontFamily: "inherit" }}
         />
-        <button onClick={() => send(input)} style={{ background: `linear-gradient(135deg, ${K.purple}, ${K.pink})`, border: "none", borderRadius: 10, padding: "9px 14px", color: "#fff", fontSize: 16, cursor: "pointer" }}>↑</button>
+        <button onClick={() => send(input)} disabled={!input.trim() || loading} style={{ background: `linear-gradient(135deg, ${K.purple}, ${K.pink})`, border: "none", borderRadius: 10, padding: "9px 14px", color: "#fff", fontSize: 16, cursor: input.trim() ? "pointer" : "default", opacity: input.trim() ? 1 : 0.5 }}>↑</button>
       </div>
     </div>
   );
 }
 
 // ─── Floating quick add ───────────────────────────────────────
-function FloatingQuickAdd() {
+function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
   const { createTask } = useTasks();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [priority, setPriority] = useState<Priority>("medium");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Expose open setter via ref so the inline button can trigger it
+  useEffect(() => {
+    if (triggerRef && triggerRef.current) {
+      triggerRef.current.onclick = () => setOpen(true);
+    }
+  }, [triggerRef]);
 
   const handleSave = async () => {
     if (!value.trim() || saving) return;
@@ -359,7 +418,12 @@ function FloatingQuickAdd() {
           </button>
         </div>
       )}
-      <button onClick={() => setOpen(o => !o)} style={{ position: "fixed", bottom: 32, right: 32, width: 56, height: 56, borderRadius: "50%", border: "none", zIndex: 100, background: `linear-gradient(135deg, ${K.purple}, ${K.pink})`, color: "#fff", fontSize: 28, cursor: "pointer", boxShadow: `0 6px 28px rgba(155,93,229,0.55)`, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s" }}>
+      {/* FAB */}
+      <button
+        ref={triggerRef}
+        onClick={() => setOpen(o => !o)}
+        style={{ position: "fixed", bottom: 32, right: 32, width: 56, height: 56, borderRadius: "50%", border: "none", zIndex: 100, background: `linear-gradient(135deg, ${K.purple}, ${K.pink})`, color: "#fff", fontSize: 28, cursor: "pointer", boxShadow: `0 6px 28px rgba(155,93,229,0.55)`, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s" }}
+      >
         {open ? "×" : "+"}
       </button>
     </>
@@ -369,7 +433,20 @@ function FloatingQuickAdd() {
 // ─── Main Dashboard ───────────────────────────────────────────
 export default function DashboardPage() {
   const [userName, setUserName] = useState("there");
-  const { tasks, loading, toggleStatus } = useTasks();
+  const { tasks, loading, toggleStatus, createTask } = useTasks();
+
+  // FIX 1: Loading timeout — never hang forever
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLoadTimeout(true), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // FIX 2: Working task tabs
+  const [activeTab, setActiveTab] = useState<"all" | "today" | "upcoming">("all");
+
+  // FIX 3: Ref to wire inline "Add task" button to FAB
+  const fabRef = React.useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -380,26 +457,32 @@ export default function DashboardPage() {
     });
   }, []);
 
-  const focusTasks     = selectFocusTasks(tasks);
-  const overdueTasks   = selectOverdueTasks(tasks);
-  const completedToday = selectCompletedToday(tasks);
-  const dueToday       = tasks.filter(t => { const today = new Date().toISOString().split("T")[0]; return t.due_date === today && t.status !== "done"; });
-  const activeTasks    = tasks.filter(t => t.status !== "done" && t.status !== "cancelled");
-  const doneTasks      = tasks.filter(t => t.status === "done");
+  const focusTasks      = selectFocusTasks(tasks);
+  const overdueTasks    = selectOverdueTasks(tasks);
+  const completedToday  = selectCompletedToday(tasks);
+  const todayStr        = new Date().toISOString().split("T")[0];
+  const dueToday        = tasks.filter(t => t.due_date === todayStr && t.status !== "done");
+  const activeTasks     = tasks.filter(t => t.status !== "done" && t.status !== "cancelled");
+  const doneTasks       = tasks.filter(t => t.status === "done");
   const inProgressTasks = tasks.filter(t => t.status === "in_progress");
+
+  // FIX 2: Filtered tasks based on active tab
+  const visibleTasks =
+    activeTab === "today"
+      ? dueToday
+      : activeTab === "upcoming"
+      ? tasks.filter(t => t.due_date && t.due_date > todayStr && t.status !== "done")
+      : tasks;
 
   const hour     = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
-  // Sparkline data — tasks completed per day (mock for now, replace with real data later)
+  // TODO: Replace chartData with real task-completion history from Supabase
   const chartData = [20, 35, 28, 55, 42, 68, 45, 72, 58, 80, 65, 88, 72];
   const days      = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-  if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh", color: K.muted, fontSize: 14 }}>
-      Loading your workspace 🖤
-    </div>
-  );
+  // Show skeleton while loading (with timeout fallback)
+  if (loading && !loadTimeout) return <SkeletonDashboard />;
 
   return (
     <>
@@ -411,6 +494,10 @@ export default function DashboardPage() {
         ::-webkit-scrollbar-thumb { background: rgba(155,93,229,0.3); border-radius: 2px; }
         select option { background: #1e1830; }
         input::placeholder { color: rgba(224,210,255,0.25); }
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+          40%           { transform: translateY(-6px); opacity: 1; }
+        }
       `}</style>
 
       <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -419,23 +506,36 @@ export default function DashboardPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
           <div>
             <h1 style={{ fontSize: 26, fontWeight: 800, color: K.white, margin: 0, marginBottom: 4 }}>
-              {greeting}, <span style={{ background: `linear-gradient(135deg, ${K.purple2}, ${K.pink})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{userName}</span>! 🩷
+              {greeting},{" "}
+              <span style={{ background: `linear-gradient(135deg, ${K.purple2}, ${K.pink})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                {userName}
+              </span>! 🩷
             </h1>
-            <p style={{ fontSize: 13, color: K.muted, margin: 0 }}>Here&apos;s what&apos;s happening with your operations today.</p>
+            <p style={{ fontSize: 13, color: K.muted, margin: 0 }}>
+              Here&apos;s what&apos;s happening with your operations today.
+            </p>
           </div>
-          {overdueTasks.length > 0 && (
-            <a href="/tasks" style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 12, padding: "9px 18px", fontSize: 13, color: K.red, textDecoration: "none", fontWeight: 600 }}>
-              ⚠️ {overdueTasks.length} overdue
-            </a>
-          )}
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {/* Empty-state hint when no tasks yet */}
+            {tasks.length === 0 && !loading && (
+              <span style={{ fontSize: 12, color: K.muted, background: K.surface2, border: `1px solid ${K.border}`, borderRadius: 10, padding: "8px 14px" }}>
+                No tasks yet — add one below 🖤
+              </span>
+            )}
+            {overdueTasks.length > 0 && (
+              <a href="/tasks" style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 12, padding: "9px 18px", fontSize: 13, color: K.red, textDecoration: "none", fontWeight: 600 }}>
+                ⚠️ {overdueTasks.length} overdue
+              </a>
+            )}
+          </div>
         </div>
 
         {/* ── Stat cards ───────────────────────────── */}
         <div style={{ display: "flex", gap: 14, marginBottom: 20 }}>
-          <StatCard label="Total Tasks"    value={tasks.length}          sub="all time"        color={K.purple} icon="📋" trend={`${activeTasks.length} active`} />
-          <StatCard label="Active Tasks"   value={activeTasks.length}    sub="in progress"     color={K.pink}   icon="⚡" />
-          <StatCard label="Pending Tasks"  value={dueToday.length}       sub="due today"       color={K.yellow} icon="🎯" />
-          <StatCard label="Focus Tasks"    value={focusTasks.length}     sub="starred"         color={K.purple2} icon="⭐" />
+          <StatCard label="Total Tasks"   value={tasks.length}         sub="all time"    color={K.purple}  icon="📋" trend={activeTasks.length > 0 ? `${activeTasks.length} active` : undefined} />
+          <StatCard label="Active Tasks"  value={activeTasks.length}   sub="in progress" color={K.pink}    icon="⚡" />
+          <StatCard label="Due Today"     value={dueToday.length}      sub="pending"     color={K.yellow}  icon="🎯" />
+          <StatCard label="Focus Tasks"   value={focusTasks.length}    sub="starred"     color={K.purple2} icon="⭐" />
         </div>
 
         {/* ── Main 3-col grid ──────────────────────── */}
@@ -455,7 +555,7 @@ export default function DashboardPage() {
                 <a href="#" style={{ fontSize: 12, color: K.pink, textDecoration: "none", fontWeight: 600 }}>View all →</a>
               </div>
               <div style={{ maxHeight: 280, overflowY: "auto" }}>
-                <Suspense fallback={<div style={{ color: K.muted, fontSize: 12 }}>Loading...</div>}>
+                <Suspense fallback={<div style={{ color: K.muted, fontSize: 12, padding: "8px 0" }}>Loading emails...</div>}>
                   <GmailWidget />
                 </Suspense>
               </div>
@@ -477,7 +577,6 @@ export default function DashboardPage() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, alignItems: "center" }}>
                 <div>
-                  {/* Y axis labels + chart */}
                   <div style={{ display: "flex", gap: 8 }}>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", fontSize: 10, color: K.muted, paddingBottom: 16, paddingTop: 4 }}>
                       {[100,80,60,40,20,0].map(v => <span key={v}>{v}</span>)}
@@ -505,25 +604,52 @@ export default function DashboardPage() {
                 <a href="/tasks" style={{ fontSize: 12, color: K.pink, textDecoration: "none", fontWeight: 600 }}>View all</a>
               </div>
 
-              {/* Tabs */}
+              {/* FIX 2: Working tabs */}
               <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-                {["All", "Due Today", "Upcoming"].map((tab, i) => (
-                  <button key={tab} style={{ padding: "5px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", background: i === 0 ? `linear-gradient(135deg, ${K.purple}, ${K.pink})` : "transparent", border: i === 0 ? "none" : `1px solid ${K.border}`, color: i === 0 ? "#fff" : K.muted }}>
-                    {tab}
+                {([
+                  { key: "all",      label: "All" },
+                  { key: "today",    label: "Due Today" },
+                  { key: "upcoming", label: "Upcoming" },
+                ] as const).map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    style={{
+                      padding: "5px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                      background: activeTab === tab.key ? `linear-gradient(135deg, ${K.purple}, ${K.pink})` : "transparent",
+                      border: activeTab === tab.key ? "none" : `1px solid ${K.border}`,
+                      color: activeTab === tab.key ? "#fff" : K.muted,
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {tab.label}
+                    {tab.key === "today" && dueToday.length > 0 && (
+                      <span style={{ marginLeft: 5, background: K.pink, color: "#fff", borderRadius: 100, fontSize: 9, padding: "1px 5px", fontWeight: 800 }}>
+                        {dueToday.length}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
 
               <div style={{ maxHeight: 240, overflowY: "auto" }}>
-                {tasks.slice(0, 6).map(task => (
-                  <TaskRow key={task.id} task={task} onToggle={toggleStatus} />
-                ))}
-                {tasks.length === 0 && (
-                  <div style={{ textAlign: "center", padding: "20px 0", color: K.muted, fontSize: 13 }}>No tasks yet 🖤</div>
-                )}
+                {visibleTasks.length > 0
+                  ? visibleTasks.slice(0, 6).map(task => (
+                      <TaskRow key={task.id} task={task} onToggle={toggleStatus} />
+                    ))
+                  : (
+                    <div style={{ textAlign: "center", padding: "24px 0", color: K.muted, fontSize: 13 }}>
+                      {activeTab === "today" ? "Nothing due today 🩷" : activeTab === "upcoming" ? "No upcoming tasks 🖤" : "No tasks yet 🖤"}
+                    </div>
+                  )
+                }
               </div>
 
-              <button onClick={() => {}} style={{ width: "100%", marginTop: 10, padding: "10px", borderRadius: 12, border: `1px dashed rgba(155,93,229,0.3)`, background: "transparent", color: K.purple2, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              {/* FIX 3: Wired to FAB */}
+              <button
+                onClick={() => fabRef.current?.click()}
+                style={{ width: "100%", marginTop: 10, padding: "10px", borderRadius: 12, border: `1px dashed rgba(155,93,229,0.3)`, background: "transparent", color: K.purple2, fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+              >
                 + Add new task
               </button>
             </div>
@@ -536,7 +662,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <FloatingQuickAdd />
+      <FloatingQuickAdd triggerRef={fabRef} />
     </>
   );
 }
