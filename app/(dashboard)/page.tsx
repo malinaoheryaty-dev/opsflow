@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTasks, selectFocusTasks, selectOverdueTasks, selectCompletedToday } from "@/hooks/useTasks";
 import type { Task, Priority, TaskStatus } from "@/types/database";
+import GmailWidget from "@/components/gmail/GmailWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -342,6 +343,18 @@ export default function DashboardPage() {
             <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 12 }}>⚡ Quick Capture</div>
             <QuickCapture />
           </div>
+
+{/* Gmail widget */}
+<div style={{
+  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: 16, padding: 20,
+}}>
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+    <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>📧 Gmail</div>
+    <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.25)" }}>Unread</span>
+  </div>
+  <GmailWidget />
+</div>
 
           {/* Integrations status */}
           <div style={{
