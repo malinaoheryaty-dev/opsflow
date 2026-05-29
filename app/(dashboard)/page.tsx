@@ -6,6 +6,7 @@ import { useTasks, selectFocusTasks, selectOverdueTasks, selectCompletedToday } 
 import GmailWidget from "@/components/gmail/GmailWidget";
 import type { Task, Priority } from "@/types/database";
 import React, { useEffect, useState, Suspense, useCallback } from "react";
+import CalendarWidget from "@/components/calendar/CalendarWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -544,7 +545,7 @@ export default function DashboardPage() {
           {/* ── Col 1: Calendar + Gmail ──────────── */}
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18, padding: 20 }}>
-              <MiniCalendar />
+              <CalendarWidget />
             </div>
             <div style={{ background: K.surface, border: `1px solid ${K.border}`, borderRadius: 18, padding: 20 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
