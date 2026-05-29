@@ -369,7 +369,7 @@ function AIAssistantPanel() {
 }
 
 // ─── Floating quick add ───────────────────────────────────────
-function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement> })
+function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButtonElement | null> }) {
   const { createTask } = useTasks();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -421,8 +421,8 @@ function FloatingQuickAdd({ triggerRef }: { triggerRef: React.RefObject<HTMLButt
       )}
       {/* FAB */}
       <button
-  ref={(el) => { triggerRef.current = el; }}
-  onClick={() => setOpen(o => !o)}
+        ref={triggerRef}
+        onClick={() => setOpen(o => !o)}
         style={{ position: "fixed", bottom: 32, right: 32, width: 56, height: 56, borderRadius: "50%", border: "none", zIndex: 100, background: `linear-gradient(135deg, ${K.purple}, ${K.pink})`, color: "#fff", fontSize: 28, cursor: "pointer", boxShadow: `0 6px 28px rgba(155,93,229,0.55)`, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s" }}
       >
         {open ? "×" : "+"}
