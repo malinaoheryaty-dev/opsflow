@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div style={{
       display: "flex", minHeight: "100vh",
-      background: "#09090D", fontFamily: "'DM Sans', sans-serif", color: "#fff",
+      background: "#0a0a0f", fontFamily: "'DM Sans', sans-serif", color: "#fff",
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* ── Sidebar ─────────────────────────────── */}
       <aside style={{
-        width: 220, background: "#0C0C11",
+        width: 220, background: "#0e0c16",
         borderRight: "1px solid rgba(255,255,255,0.07)",
         display: "flex", flexDirection: "column",
         padding: "20px 12px", flexShrink: 0,
