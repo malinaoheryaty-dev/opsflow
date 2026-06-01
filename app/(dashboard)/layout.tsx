@@ -18,17 +18,17 @@ const NAV = [
 ];
 
 const INTEGRATIONS = [
-  { label: "Gmail",     icon: "📧" },
-  { label: "Calendar",  icon: "📅" },
-  { label: "Discord",   icon: "🎮" },
+  { label: "Gmail",    icon: "📧" },
+  { label: "Calendar", icon: "📅" },
+  { label: "Discord",  icon: "🎮" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [aiOpen, setAiOpen] = useState(false);
+  const [profile, setProfile]         = useState<Profile | null>(null);
+  const [aiOpen, setAiOpen]           = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const supabase = createClient();
-  const router = useRouter();
+  const router   = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -51,171 +51,269 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div style={{
       display: "flex", minHeight: "100vh",
-      background: "#0a0a0f", fontFamily: "'DM Sans', sans-serif", color: "#fff",
+      background: "#0d0b14",
+      fontFamily: "'DM Sans', sans-serif", color: "#fff",
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-        select option { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.25); border-radius: 2px; }
+        select option { background: #1a1030; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
-        .sidebar-toggle:hover { background: rgba(255,255,255,0.12) !important; }
-        .nav-link:hover { background: rgba(255,255,255,0.06) !important; color: rgba(255,255,255,0.75) !important; }
+
+        .nav-link { transition: all 0.15s ease; }
+        .nav-link:hover .nav-icon-wrap {
+          background: rgba(155,93,229,0.18) !important;
+        }
+        .nav-link:hover {
+          color: rgba(255,255,255,0.85) !important;
+        }
+        .nav-link:hover .nav-label {
+          color: rgba(255,255,255,0.85) !important;
+        }
+
+        .toggle-btn:hover {
+          background: rgba(168,85,247,0.3) !important;
+          border-color: rgba(168,85,247,0.6) !important;
+        }
+
+        .integration-row:hover {
+          background: rgba(155,93,229,0.08) !important;
+        }
+
+        .ai-btn:hover {
+          background: rgba(167,139,250,0.2) !important;
+        }
       `}</style>
 
-      {/* ── Sidebar toggle button ─────────────────── */}
+      {/* ── Sidebar toggle ── */}
       <button
-        className="sidebar-toggle"
+        className="toggle-btn"
         onClick={() => setSidebarOpen(o => !o)}
         title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
         style={{
           position: "fixed",
           top: 20,
-          left: sidebarOpen ? 208 : 12,
-          zIndex: 300,
-          width: 24,
-          height: 24,
+          left: sidebarOpen ? 194 : 10,
+          zIndex: 400,
+          width: 22, height: 22,
           borderRadius: "50%",
-          background: "rgba(255,255,255,0.07)",
-          border: "1px solid rgba(255,255,255,0.12)",
-          color: "rgba(255,255,255,0.5)",
-          fontSize: 10,
+          background: "rgba(155,93,229,0.15)",
+          border: "1px solid rgba(155,93,229,0.4)",
+          color: "#c084fc",
+          fontSize: 8,
           cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "left 0.25s ease, background 0.15s",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "left 0.28s ease, background 0.15s, border-color 0.15s",
         }}
       >
         {sidebarOpen ? "◀" : "▶"}
       </button>
 
-      {/* ── Sidebar ─────────────────────────────── */}
+      {/* ── Sidebar ── */}
       <aside style={{
-        width: sidebarOpen ? 220 : 0,
-        minWidth: 0,
-        background: "#0e0c16",
-        borderRight: sidebarOpen ? "1px solid rgba(255,255,255,0.07)" : "none",
-        display: "flex",
-        flexDirection: "column",
-        padding: sidebarOpen ? "20px 12px" : 0,
+        width: sidebarOpen ? 210 : 0,
         flexShrink: 0,
-        position: "sticky",
-        top: 0,
-        height: "100vh",
+        background: "#110e1f",
+        borderRight: "1px solid rgba(155,93,229,0.12)",
+        display: "flex", flexDirection: "column",
+        position: "sticky", top: 0, height: "100vh",
         overflow: "hidden",
-        transition: "width 0.25s ease, padding 0.25s ease",
+        transition: "width 0.28s ease",
       }}>
-        <div style={{ width: 196, display: "flex", flexDirection: "column", height: "100%" }}>
-          {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 8px", marginBottom: 28 }}>
+        <div style={{ width: 210, display: "flex", flexDirection: "column", height: "100%", padding: "16px 10px 12px" }}>
+
+          {/* ── Logo ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "4px 8px", marginBottom: 22 }}>
             <div style={{
-              width: 30, height: 30, borderRadius: 9,
-              background: "linear-gradient(135deg, #4A9EFF 0%, #A78BFA 100%)",
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
-            }}>⚡</div>
-            <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>OpsFlow</span>
+              width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+              background: "linear-gradient(135deg, #9b5de5 0%, #ff6eb4 100%)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 18, boxShadow: "0 4px 12px rgba(155,93,229,0.35)",
+            }}>🖤</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.01em", lineHeight: 1.1 }}>OpsFlow</div>
+              <div style={{ fontSize: 10, color: "#ff6eb4", fontWeight: 600, letterSpacing: "0.05em" }}>WORKSPACE</div>
+            </div>
           </div>
 
-          {/* Main nav */}
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.2)", letterSpacing: "0.08em", marginBottom: 8, paddingLeft: 8 }}>
-              WORKSPACE
-            </div>
+          {/* ── Nav section label ── */}
+          <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(192,132,252,0.3)", letterSpacing: "0.12em", marginBottom: 6, paddingLeft: 10 }}>
+            WORKSPACE
+          </div>
+
+          {/* ── Nav items ── */}
+          <div style={{ flex: 1, overflowY: "auto" }}>
             {NAV.map(item => {
               const active = pathname === item.href;
               return (
-                <a key={item.href} href={item.href} className="nav-link" style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "8px 10px", borderRadius: 9, marginBottom: 2,
-                  textDecoration: "none",
-                  background: active ? "rgba(74,158,255,0.12)" : "transparent",
-                  border: active ? "1px solid rgba(74,158,255,0.2)" : "1px solid transparent",
-                  color: active ? "#4A9EFF" : "rgba(255,255,255,0.45)",
-                  fontSize: 13.5, fontWeight: active ? 600 : 400,
-                  transition: "all 0.15s",
-                }}>
-                  <KuromiIcon
-                    name={NAV_ICONS[item.href]}
-                    size={16}
-                    color={active ? "#9b5de5" : "rgba(224,210,255,0.35)"}
-                  />
-                  {item.label}
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="nav-link"
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "4px 6px 4px 4px",
+                    borderRadius: 10, marginBottom: 2,
+                    textDecoration: "none",
+                    background: active ? "rgba(155,93,229,0.14)" : "transparent",
+                    position: "relative",
+                  }}
+                >
+                  {/* Active left bar */}
+                  {active && (
+                    <div style={{
+                      position: "absolute", left: 0, top: "20%", bottom: "20%",
+                      width: 3, borderRadius: 2,
+                      background: "linear-gradient(180deg, #9b5de5, #ff6eb4)",
+                    }} />
+                  )}
+
+                  {/* Icon wrapper */}
+                  <div
+                    className="nav-icon-wrap"
+                    style={{
+                      width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: active ? "rgba(155,93,229,0.22)" : "transparent",
+                      transition: "background 0.15s",
+                      marginLeft: 4,
+                    }}
+                  >
+                    <KuromiIcon
+                      name={NAV_ICONS[item.href]}
+                      size={17}
+                      color={active ? "#c084fc" : "rgba(192,132,252,0.45)"}
+                    />
+                  </div>
+
+                  {/* Label */}
+                  <span
+                    className="nav-label"
+                    style={{
+                      fontSize: 13.5,
+                      fontWeight: active ? 600 : 400,
+                      color: active ? "#e0aaff" : "rgba(255,255,255,0.42)",
+                      transition: "color 0.15s",
+                    }}
+                  >
+                    {item.label}
+                  </span>
+
+                  {/* Plus badge on some items — matches screenshot */}
+                  {(item.href === "/tasks" || item.href === "/notes" || item.href === "/team") && (
+                    <div style={{ marginLeft: "auto", color: "rgba(192,132,252,0.25)", fontSize: 14, fontWeight: 300 }}>+</div>
+                  )}
                 </a>
               );
             })}
 
-            <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "14px 8px" }} />
+            {/* ── Divider ── */}
+            <div style={{ height: 1, background: "rgba(155,93,229,0.1)", margin: "10px 8px" }} />
 
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.2)", letterSpacing: "0.08em", marginBottom: 8, paddingLeft: 8 }}>
+            {/* ── Integrations ── */}
+            <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(192,132,252,0.3)", letterSpacing: "0.12em", marginBottom: 6, paddingLeft: 10 }}>
               INTEGRATIONS
             </div>
             {INTEGRATIONS.map(item => (
-              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 10px", borderRadius: 8 }}>
-                <span style={{ fontSize: 13 }}>{item.icon}</span>
-                <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>{item.label}</span>
-                <span style={{ marginLeft: "auto", width: 6, height: 6, borderRadius: "50%", background: "#22C55E" }} />
+              <div
+                key={item.label}
+                className="integration-row"
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "6px 10px 6px 14px", borderRadius: 8,
+                  cursor: "pointer", transition: "background 0.15s",
+                }}
+              >
+                <span style={{ fontSize: 14 }}>{item.icon}</span>
+                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.32)" }}>{item.label}</span>
+                <span style={{ marginLeft: "auto", width: 6, height: 6, borderRadius: "50%", background: "#9b5de5", boxShadow: "0 0 6px rgba(155,93,229,0.6)" }} />
               </div>
             ))}
           </div>
 
-          {/* Bottom */}
-          <div>
+          {/* ── Bottom: AI + User ── */}
+          <div style={{ marginTop: 8 }}>
+            {/* AI Assistant button */}
             <button
+              className="ai-btn"
               onClick={() => setAiOpen(o => !o)}
               style={{
                 width: "100%", display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 10px", borderRadius: 10, cursor: "pointer", marginBottom: 8,
-                background: aiOpen ? "rgba(167,139,250,0.15)" : "rgba(167,139,250,0.08)",
-                border: "1px solid rgba(167,139,250,0.25)",
-                color: "#A78BFA", fontSize: 13, fontWeight: 600,
+                padding: "10px 12px", borderRadius: 11, cursor: "pointer", marginBottom: 8,
+                background: aiOpen ? "rgba(167,139,250,0.18)" : "rgba(167,139,250,0.09)",
+                border: "1px solid rgba(167,139,250,0.22)",
+                color: "#c084fc", fontSize: 13, fontWeight: 600,
+                transition: "background 0.15s",
               }}
             >
-              <KuromiIcon name="ai" size={16} color="#c084fc" /> AI Assistant
+              <div style={{
+                width: 26, height: 26, borderRadius: 7, flexShrink: 0,
+                background: "linear-gradient(135deg, #9b5de5, #ff6eb4)",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13,
+              }}>✦</div>
+              AI Assistant
             </button>
 
-            {/* User */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px" }}>
+            {/* User row */}
+            <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "6px 8px", borderRadius: 10 }}>
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: "50%" }} />
+                <img src={profile.avatar_url} alt="" style={{
+                  width: 30, height: 30, borderRadius: "50%",
+                  border: "2px solid rgba(155,93,229,0.4)",
+                }} />
               ) : (
                 <div style={{
-                  width: 28, height: 28, borderRadius: "50%",
-                  background: "#4A9EFF", display: "flex", alignItems: "center",
-                  justifyContent: "center", fontSize: 11, fontWeight: 700,
+                  width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
+                  background: "linear-gradient(135deg, #9b5de5, #ff6eb4)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 700,
+                  border: "2px solid rgba(155,93,229,0.35)",
                 }}>{initials}</div>
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: "rgba(255,255,255,0.75)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: "rgba(255,255,255,0.7)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {profile?.full_name ?? "Loading..."}
                 </div>
+                {profile?.email && (
+                  <div style={{ fontSize: 10.5, color: "rgba(192,132,252,0.4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 1 }}>
+                    {profile.email}
+                  </div>
+                )}
               </div>
               <button onClick={handleSignOut} title="Sign out" style={{
-                background: "none", border: "none", color: "rgba(255,255,255,0.2)",
-                fontSize: 14, cursor: "pointer",
-              }}><KuromiIcon name="signout" size={14} color="rgba(224,210,255,0.25)" /></button>
+                background: "none", border: "none",
+                cursor: "pointer", flexShrink: 0,
+                display: "flex", alignItems: "center",
+              }}>
+                <KuromiIcon name="signout" size={14} color="rgba(192,132,252,0.3)" />
+              </button>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* ── Main content ─────────────────────────── */}
-      <main style={{ flex: 1, overflowY: "auto", padding: "28px 32px", paddingRight: aiOpen ? 392 : 32, transition: "padding-right 0.2s ease" }}>
+      {/* ── Main ── */}
+      <main style={{
+        flex: 1, overflowY: "auto",
+        padding: "28px 32px",
+        paddingRight: aiOpen ? 392 : 32,
+        transition: "padding-right 0.2s ease",
+        background: "radial-gradient(ellipse at 20% 0%, rgba(155,93,229,0.06) 0%, transparent 60%), #0d0b14",
+      }}>
         {children}
       </main>
 
-      {/* ── AI Sidebar ───────────────────────────── */}
       {aiOpen && <AISidebar onClose={() => setAiOpen(false)} />}
     </div>
   );
 }
 
-// ─── Minimal AI sidebar ─────────
 function AISidebar({ onClose }: { onClose: () => void }) {
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState([
-    { role: "assistant", text: "Hi! I can summarize your Discord, prioritize tasks, or generate your EOD report. What do you need?" }
+    { role: "assistant", text: "Hey there! I'm Kuromi 🖤✨ How can I help you slay your day?" }
   ]);
   const [loading, setLoading] = useState(false);
 
@@ -225,7 +323,6 @@ function AISidebar({ onClose }: { onClose: () => void }) {
     setInput("");
     setMsgs(m => [...m, { role: "user", text: userMsg }]);
     setLoading(true);
-
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
@@ -235,7 +332,7 @@ function AISidebar({ onClose }: { onClose: () => void }) {
       const data = await res.json();
       setMsgs(m => [...m, { role: "assistant", text: data.reply }]);
     } catch {
-      setMsgs(m => [...m, { role: "assistant", text: "Sorry, something went wrong. Try again." }]);
+      setMsgs(m => [...m, { role: "assistant", text: "Sorry, something went wrong!" }]);
     } finally {
       setLoading(false);
     }
@@ -244,18 +341,19 @@ function AISidebar({ onClose }: { onClose: () => void }) {
   return (
     <div style={{
       position: "fixed", right: 0, top: 0, bottom: 0, width: 360,
-      background: "#0F0F13", borderLeft: "1px solid rgba(255,255,255,0.08)",
+      background: "#110e1f",
+      borderLeft: "1px solid rgba(155,93,229,0.15)",
       display: "flex", flexDirection: "column", zIndex: 200,
     }}>
-      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(155,93,229,0.12)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #A78BFA, #4A9EFF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>✦</div>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, #9b5de5, #ff6eb4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17 }}>🖤</div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>AI Assistant</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>Powered by Claude</div>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>Kuromi AI Assistant</div>
+            <div style={{ fontSize: 11, color: "rgba(192,132,252,0.45)" }}>Powered by Claude</div>
           </div>
         </div>
-        <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
+        <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(192,132,252,0.4)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -264,30 +362,33 @@ function AISidebar({ onClose }: { onClose: () => void }) {
             <div style={{
               maxWidth: "85%", padding: "10px 13px", lineHeight: 1.6, fontSize: 13.5,
               borderRadius: m.role === "user" ? "12px 12px 4px 12px" : "12px 12px 12px 4px",
-              background: m.role === "user" ? "#4A9EFF" : "rgba(255,255,255,0.07)",
-              color: m.role === "user" ? "#fff" : "rgba(255,255,255,0.78)",
+              background: m.role === "user"
+                ? "linear-gradient(135deg, #9b5de5, #ff6eb4)"
+                : "rgba(155,93,229,0.1)",
+              border: m.role === "user" ? "none" : "1px solid rgba(155,93,229,0.18)",
+              color: "#fff",
             }}>{m.text}</div>
           </div>
         ))}
-        {loading && (
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, padding: "4px 0" }}>✦ Thinking...</div>
-        )}
+        {loading && <div style={{ color: "rgba(192,132,252,0.45)", fontSize: 13 }}>🖤 Thinking...</div>}
       </div>
 
-      <div style={{ padding: 14, borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", gap: 8 }}>
+      <div style={{ padding: 14, borderTop: "1px solid rgba(155,93,229,0.12)", display: "flex", gap: 8 }}>
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === "Enter" && send()}
-          placeholder="Ask anything..."
+          placeholder="Ask Kuromi anything..."
           style={{
-            flex: 1, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 10, padding: "10px 12px", color: "#fff", fontSize: 13.5,
-            outline: "none", fontFamily: "inherit",
+            flex: 1, background: "rgba(155,93,229,0.08)",
+            border: "1px solid rgba(155,93,229,0.22)",
+            borderRadius: 10, padding: "10px 12px", color: "#fff",
+            fontSize: 13.5, outline: "none", fontFamily: "inherit",
           }}
         />
         <button onClick={send} disabled={loading} style={{
-          background: "#4A9EFF", border: "none", borderRadius: 10,
+          background: "linear-gradient(135deg, #9b5de5, #ff6eb4)",
+          border: "none", borderRadius: 10,
           padding: "10px 16px", color: "#fff", fontSize: 16, cursor: "pointer",
         }}>↑</button>
       </div>
