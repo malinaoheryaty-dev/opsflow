@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — OpsFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d0b14;
+      --surface: #161224;
+      --border:  rgba(160,100,255,0.15);
+      --purple:  #9b5de5;
+      --pink:    #ff6eb4;
+      --purple2: #c084fc;
+      --white:   #f5f0ff;
+      --muted:   rgba(224,210,255,0.5);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      background: var(--surface);
+    }
+
+    .header-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple2), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    .header-nav a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .header-nav a:hover { color: var(--purple2); }
+    .header-nav a.active { color: var(--purple2); font-weight: 600; }
+
+    main {
+      max-width: 760px;
+      margin: 56px auto;
+      padding: 0 24px 80px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .page-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    h2 .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(155,93,229,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    p {
+      font-size: 14.5px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    ul li {
+      font-size: 14.5px;
+      color: var(--muted);
+      padding-left: 20px;
+      position: relative;
+    }
+
+    ul li::before {
+      content: "·";
+      position: absolute;
+      left: 6px;
+      color: var(--purple2);
+      font-weight: 800;
+    }
+
+    a { color: var(--purple2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .highlight {
+      background: rgba(155,93,229,0.08);
+      border: 1px solid rgba(155,93,229,0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: var(--purple2);
+      margin-top: 12px;
+    }
+
+    .warning-box {
+      background: rgba(251,191,36,0.06);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: rgba(251,191,36,0.85);
+      margin-top: 12px;
+    }
+
+    .contact-box {
+      background: linear-gradient(135deg, rgba(155,93,229,0.12), rgba(255,110,180,0.08));
+      border: 1px solid rgba(160,100,255,0.25);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    .contact-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .contact-box p { text-align: center; margin-bottom: 0; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--purple2); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">⚡</div>
+      <span class="logo">OpsFlow</span>
+    </div>
+    <nav class="header-nav">
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <a href="/terms-of-service.html" class="active">Terms of Service</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Terms of Service</h1>
+  <p class="page-meta">Last updated: June 1, 2025 &nbsp;·&nbsp; Effective immediately</p>
+
+  <div class="card">
+    <h2><span class="icon">🖤</span> Agreement to terms</h2>
+    <p>By accessing or using OpsFlow ("the Service") at <a href="https://mvpopsflow.netlify.app">mvpopsflow.netlify.app</a>, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.</p>
+    <p>OpsFlow is operated by MVP Dashboard ("we", "us", or "our"). These terms apply to all users of the Service.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">✅</span> What OpsFlow is</h2>
+    <p>OpsFlow is an AI-powered operations dashboard that helps you manage tasks, notes, emails, and calendar events in one place. It integrates with Google services (Gmail and Google Calendar) to display your data in a unified workspace.</p>
+    <p>OpsFlow is currently an MVP (minimum viable product) in active development. Features may change, be added, or be removed over time.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">👤</span> Your account</h2>
+    <p>To use OpsFlow, you must sign in with a valid Google account. You are responsible for:</p>
+    <ul>
+      <li>Maintaining the security of your Google account credentials</li>
+      <li>All activity that occurs through your OpsFlow account</li>
+      <li>Ensuring the information you provide is accurate and up to date</li>
+      <li>Notifying us immediately of any unauthorized use of your account</li>
+    </ul>
+    <p>You must be at least 13 years old to use OpsFlow.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">📧</span> Google API &amp; third-party services</h2>
+    <p>OpsFlow accesses your Gmail and Google Calendar data through Google's official APIs, with your explicit permission via OAuth. By connecting your Google account, you authorize OpsFlow to:</p>
+    <ul>
+      <li>Read your Gmail messages to display them in your dashboard (read-only)</li>
+      <li>Read your Google Calendar events to display them in your dashboard (read-only)</li>
+    </ul>
+    <p>We do not send emails, create calendar events, or modify any Google data on your behalf unless explicitly stated. You can revoke access at any time via your <a href="https://myaccount.google.com/permissions" target="_blank">Google Account settings</a>.</p>
+    <div class="highlight">
+      OpsFlow's use of Google user data complies with the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">🚫</span> Acceptable use</h2>
+    <p>You agree not to use OpsFlow to:</p>
+    <ul>
+      <li>Violate any applicable laws or regulations</li>
+      <li>Attempt to gain unauthorized access to any part of the Service or its infrastructure</li>
+      <li>Interfere with or disrupt the Service or servers connected to it</li>
+      <li>Use the Service to store or transmit malicious code</li>
+      <li>Scrape, crawl, or extract data from the Service in an automated manner</li>
+      <li>Impersonate any person or entity</li>
+    </ul>
+    <p>We reserve the right to suspend or terminate accounts that violate these terms.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">📝</span> Your content</h2>
+    <p>You retain full ownership of all tasks, notes, and other content you create in OpsFlow. By using the Service, you grant us a limited license to store and display your content solely for the purpose of providing the Service to you.</p>
+    <p>We do not claim ownership of your content and will not use it for any purpose other than operating OpsFlow for you.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">🔄</span> Service availability</h2>
+    <p>OpsFlow is provided as-is and as-available. As an MVP in active development, we do not guarantee:</p>
+    <ul>
+      <li>Uninterrupted or error-free operation of the Service</li>
+      <li>That all features will remain available indefinitely</li>
+      <li>A specific uptime or performance level</li>
+    </ul>
+    <p>We will do our best to provide advance notice of significant changes or downtime when possible.</p>
+    <div class="warning-box">
+      ⚠️ As this is an MVP product, you should not rely solely on OpsFlow for critical business operations. Always maintain backups of important data.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">🛡️</span> Disclaimer of warranties</h2>
+    <p>OpsFlow is provided "as is" without warranties of any kind, either express or implied. To the fullest extent permitted by law, MVP Dashboard disclaims all warranties, including implied warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+    <p>We do not warrant that the Service will meet your requirements or that any errors will be corrected.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">⚖️</span> Limitation of liability</h2>
+    <p>To the maximum extent permitted by law, MVP Dashboard shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of OpsFlow, including but not limited to loss of data, loss of profits, or business interruption.</p>
+    <p>Our total liability to you for any claims arising from use of OpsFlow shall not exceed the amount you paid us in the 12 months preceding the claim (or $0 if you have not paid us anything).</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">🔁</span> Changes to these terms</h2>
+    <p>We may update these Terms of Service from time to time. When we do, we'll update the "Last updated" date at the top of this page. For significant changes, we'll make reasonable efforts to notify you (e.g. via a notice in the dashboard).</p>
+    <p>Continued use of OpsFlow after changes are posted constitutes acceptance of the updated terms.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">🗺️</span> Governing law</h2>
+    <p>These Terms of Service are governed by and construed in accordance with applicable law. Any disputes arising from these terms or your use of OpsFlow will be resolved through good-faith negotiation first, and if unresolved, through the appropriate courts.</p>
+  </div>
+
+  <div class="contact-box">
+    <h3>Questions? 🩷</h3>
+    <p>If you have any questions about these Terms of Service, reach out at:<br />
+    <a href="mailto:privacy@mvpdashboard.com">privacy@mvpdashboard.com</a></p>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 MVP Dashboard · OpsFlow ·
+  <a href="/privacy-policy.html">Privacy Policy</a> ·
+  <a href="/terms-of-service.html">Terms of Service</a> ·
+  <a href="https://mvpopsflow.netlify.app">mvpopsflow.netlify.app</a>
+</footer>
+
+</body>
+</html>
