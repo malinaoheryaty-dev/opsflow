@@ -9,8 +9,8 @@ type Tab = "profile" | "appearance" | "notifications" | "integrations";
 // accent-purple: #9b5de5  accent-pink: #f72585  text-muted: #a78bca
 // ────────────────────────────────────────────────────────────────────────────
 
-const KuromiStar = ({ className = "" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+const KuromiStar = ({ className = "", style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 16 16" fill="currentColor">
     <path d="M8 0l1.6 5.5H16l-4.8 3.5 1.8 5.5L8 11l-5 3.5 1.8-5.5L0 5.5h6.4z" />
   </svg>
 );
@@ -140,11 +140,11 @@ export default function SettingsPage() {
   ];
 
   const accentColors = [
-    { id: "purple", label: "Kuromi Purple", hex: "#9b5de5" },
-    { id: "pink",   label: "Hot Pink",      hex: "#f72585" },
-    { id: "lavender", label: "Lavender",    hex: "#c77dff" },
-    { id: "midnight", label: "Midnight",    hex: "#7b2fff" },
-    { id: "skull",  label: "Skull White",   hex: "#e8d5ff" },
+    { id: "purple",   label: "Kuromi Purple", hex: "#9b5de5" },
+    { id: "pink",     label: "Hot Pink",      hex: "#f72585" },
+    { id: "lavender", label: "Lavender",      hex: "#c77dff" },
+    { id: "midnight", label: "Midnight",      hex: "#7b2fff" },
+    { id: "skull",    label: "Skull White",   hex: "#e8d5ff" },
   ];
 
   const notifLabels: Record<keyof typeof notifications, string> = {
@@ -195,7 +195,7 @@ export default function SettingsPage() {
               color: i % 2 === 0 ? "#9b5de5" : "#f72585",
               opacity: 0.08 + Math.random() * 0.12,
               animation: `float ${3 + Math.random() * 4}s ease-in-out ${Math.random() * 2}s infinite`,
-            } as React.CSSProperties}
+            }}
           />
         ))}
       </div>
@@ -210,7 +210,7 @@ export default function SettingsPage() {
               style={{ fontFamily: "'Fredoka One', cursive", color: "#e8d5ff", letterSpacing: "0.02em" }}
             >
               Settings
-              <KuromiStar className="inline-block w-4 h-4 ml-2" style={{ color: "#f72585" } as React.CSSProperties} />
+              <KuromiStar className="inline-block w-4 h-4 ml-2" style={{ color: "#f72585" }} />
             </h1>
             <p className="text-xs mt-0.5" style={{ color: "#7a5a9a" }}>
               Customize your workspace, your way ✦
@@ -344,9 +344,7 @@ export default function SettingsPage() {
                       onClick={handleProfileSave}
                       className="px-5 py-2 rounded-xl text-sm font-extrabold transition-all duration-200"
                       style={{
-                        background: profileSaved
-                          ? "linear-gradient(135deg,#9b5de5,#f72585)"
-                          : "linear-gradient(135deg,#9b5de5,#f72585)",
+                        background: "linear-gradient(135deg,#9b5de5,#f72585)",
                         color: "#fff",
                         boxShadow: profileSaved ? "0 0 20px rgba(247,37,133,0.4)" : "0 0 12px rgba(155,93,229,0.3)",
                         transform: profileSaved ? "scale(1.03)" : "scale(1)",
@@ -492,9 +490,9 @@ export default function SettingsPage() {
             {activeTab === "integrations" && (
               <div className="space-y-4">
                 {([
-                  { key: "gmail" as const,    icon: "📧", label: "Gmail",           desc: "Connect Gmail to view emails in OpsFlow",           color: "#f72585" },
-                  { key: "calendar" as const, icon: "📅", label: "Google Calendar", desc: "Sync calendar events with the dashboard",           color: "#9b5de5" },
-                  { key: "discord" as const,  icon: "🎮", label: "Discord",         desc: "Monitor your server from OpsFlow",                  color: "#c77dff" },
+                  { key: "gmail" as const,    icon: "📧", label: "Gmail",           desc: "Connect Gmail to view emails in OpsFlow",  color: "#f72585" },
+                  { key: "calendar" as const, icon: "📅", label: "Google Calendar", desc: "Sync calendar events with the dashboard",   color: "#9b5de5" },
+                  { key: "discord" as const,  icon: "🎮", label: "Discord",         desc: "Monitor your server from OpsFlow",          color: "#c77dff" },
                 ]).map((intg) => (
                   <KuromiCard key={intg.key}>
                     <div className="flex items-center justify-between">
