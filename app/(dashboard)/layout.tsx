@@ -26,6 +26,7 @@ const INTEGRATIONS = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const supabase = createClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -59,103 +60,142 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
         select option { background: #1a1a2e; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+        .sidebar-toggle:hover { background: rgba(255,255,255,0.12) !important; }
+        .nav-link:hover { background: rgba(255,255,255,0.06) !important; color: rgba(255,255,255,0.75) !important; }
       `}</style>
+
+      {/* ── Sidebar toggle button ─────────────────── */}
+      <button
+        className="sidebar-toggle"
+        onClick={() => setSidebarOpen(o => !o)}
+        title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
+        style={{
+          position: "fixed",
+          top: 20,
+          left: sidebarOpen ? 208 : 12,
+          zIndex: 300,
+          width: 24,
+          height: 24,
+          borderRadius: "50%",
+          background: "rgba(255,255,255,0.07)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          color: "rgba(255,255,255,0.5)",
+          fontSize: 10,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "left 0.25s ease, background 0.15s",
+        }}
+      >
+        {sidebarOpen ? "◀" : "▶"}
+      </button>
 
       {/* ── Sidebar ─────────────────────────────── */}
       <aside style={{
-        width: 220, background: "#0e0c16",
-        borderRight: "1px solid rgba(255,255,255,0.07)",
-        display: "flex", flexDirection: "column",
-        padding: "20px 12px", flexShrink: 0,
-        position: "sticky", top: 0, height: "100vh",
+        width: sidebarOpen ? 220 : 0,
+        minWidth: 0,
+        background: "#0e0c16",
+        borderRight: sidebarOpen ? "1px solid rgba(255,255,255,0.07)" : "none",
+        display: "flex",
+        flexDirection: "column",
+        padding: sidebarOpen ? "20px 12px" : 0,
+        flexShrink: 0,
+        position: "sticky",
+        top: 0,
+        height: "100vh",
+        overflow: "hidden",
+        transition: "width 0.25s ease, padding 0.25s ease",
       }}>
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 8px", marginBottom: 28 }}>
-          <div style={{
-            width: 30, height: 30, borderRadius: 9,
-            background: "linear-gradient(135deg, #4A9EFF 0%, #A78BFA 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
-          }}>⚡</div>
-          <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>OpsFlow</span>
-        </div>
-
-        {/* Main nav */}
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.2)", letterSpacing: "0.08em", marginBottom: 8, paddingLeft: 8 }}>
-            WORKSPACE
+        <div style={{ width: 196, display: "flex", flexDirection: "column", height: "100%" }}>
+          {/* Logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 8px", marginBottom: 28 }}>
+            <div style={{
+              width: 30, height: 30, borderRadius: 9,
+              background: "linear-gradient(135deg, #4A9EFF 0%, #A78BFA 100%)",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
+            }}>⚡</div>
+            <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>OpsFlow</span>
           </div>
-          {NAV.map(item => {
-            const active = pathname === item.href;
-            return (
-              <a key={item.href} href={item.href} style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "8px 10px", borderRadius: 9, marginBottom: 2,
-                textDecoration: "none",
-                background: active ? "rgba(74,158,255,0.12)" : "transparent",
-                border: active ? "1px solid rgba(74,158,255,0.2)" : "1px solid transparent",
-                color: active ? "#4A9EFF" : "rgba(255,255,255,0.45)",
-                fontSize: 13.5, fontWeight: active ? 600 : 400,
-                transition: "all 0.15s",
-              }}>
-                <KuromiIcon
-  name={NAV_ICONS[item.href]}
-  size={16}
-  color={active ? "#9b5de5" : "rgba(224,210,255,0.35)"}
-/>
-{item.label}
-              </a>
-            );
-          })}
 
-          <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "14px 8px" }} />
-
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.2)", letterSpacing: "0.08em", marginBottom: 8, paddingLeft: 8 }}>
-            INTEGRATIONS
-          </div>
-          {INTEGRATIONS.map(item => (
-            <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 10px", borderRadius: 8 }}>
-              <span style={{ fontSize: 13 }}>{item.icon}</span>
-              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>{item.label}</span>
-              <span style={{ marginLeft: "auto", width: 6, height: 6, borderRadius: "50%", background: "#22C55E" }} />
+          {/* Main nav */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.2)", letterSpacing: "0.08em", marginBottom: 8, paddingLeft: 8 }}>
+              WORKSPACE
             </div>
-          ))}
-        </div>
+            {NAV.map(item => {
+              const active = pathname === item.href;
+              return (
+                <a key={item.href} href={item.href} className="nav-link" style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "8px 10px", borderRadius: 9, marginBottom: 2,
+                  textDecoration: "none",
+                  background: active ? "rgba(74,158,255,0.12)" : "transparent",
+                  border: active ? "1px solid rgba(74,158,255,0.2)" : "1px solid transparent",
+                  color: active ? "#4A9EFF" : "rgba(255,255,255,0.45)",
+                  fontSize: 13.5, fontWeight: active ? 600 : 400,
+                  transition: "all 0.15s",
+                }}>
+                  <KuromiIcon
+                    name={NAV_ICONS[item.href]}
+                    size={16}
+                    color={active ? "#9b5de5" : "rgba(224,210,255,0.35)"}
+                  />
+                  {item.label}
+                </a>
+              );
+            })}
 
-        {/* Bottom */}
-        <div>
-          <button
-            onClick={() => setAiOpen(o => !o)}
-            style={{
-              width: "100%", display: "flex", alignItems: "center", gap: 10,
-              padding: "10px 10px", borderRadius: 10, cursor: "pointer", marginBottom: 8,
-              background: aiOpen ? "rgba(167,139,250,0.15)" : "rgba(167,139,250,0.08)",
-              border: "1px solid rgba(167,139,250,0.25)",
-              color: "#A78BFA", fontSize: 13, fontWeight: 600,
-            }}
-          >
-            <KuromiIcon name="ai" size={16} color="#c084fc" /> AI Assistant
-          </button>
+            <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "14px 8px" }} />
 
-          {/* User */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px" }}>
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: "50%" }} />
-            ) : (
-              <div style={{
-                width: 28, height: 28, borderRadius: "50%",
-                background: "#4A9EFF", display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: 11, fontWeight: 700,
-              }}>{initials}</div>
-            )}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 600, color: "rgba(255,255,255,0.75)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {profile?.full_name ?? "Loading..."}
+            <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.2)", letterSpacing: "0.08em", marginBottom: 8, paddingLeft: 8 }}>
+              INTEGRATIONS
+            </div>
+            {INTEGRATIONS.map(item => (
+              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 10px", borderRadius: 8 }}>
+                <span style={{ fontSize: 13 }}>{item.icon}</span>
+                <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.35)" }}>{item.label}</span>
+                <span style={{ marginLeft: "auto", width: 6, height: 6, borderRadius: "50%", background: "#22C55E" }} />
               </div>
+            ))}
+          </div>
+
+          {/* Bottom */}
+          <div>
+            <button
+              onClick={() => setAiOpen(o => !o)}
+              style={{
+                width: "100%", display: "flex", alignItems: "center", gap: 10,
+                padding: "10px 10px", borderRadius: 10, cursor: "pointer", marginBottom: 8,
+                background: aiOpen ? "rgba(167,139,250,0.15)" : "rgba(167,139,250,0.08)",
+                border: "1px solid rgba(167,139,250,0.25)",
+                color: "#A78BFA", fontSize: 13, fontWeight: 600,
+              }}
+            >
+              <KuromiIcon name="ai" size={16} color="#c084fc" /> AI Assistant
+            </button>
+
+            {/* User */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px" }}>
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" style={{ width: 28, height: 28, borderRadius: "50%" }} />
+              ) : (
+                <div style={{
+                  width: 28, height: 28, borderRadius: "50%",
+                  background: "#4A9EFF", display: "flex", alignItems: "center",
+                  justifyContent: "center", fontSize: 11, fontWeight: 700,
+                }}>{initials}</div>
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: "rgba(255,255,255,0.75)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {profile?.full_name ?? "Loading..."}
+                </div>
+              </div>
+              <button onClick={handleSignOut} title="Sign out" style={{
+                background: "none", border: "none", color: "rgba(255,255,255,0.2)",
+                fontSize: 14, cursor: "pointer",
+              }}><KuromiIcon name="signout" size={14} color="rgba(224,210,255,0.25)" /></button>
             </div>
-            <button onClick={handleSignOut} title="Sign out" style={{
-              background: "none", border: "none", color: "rgba(255,255,255,0.2)",
-              fontSize: 14, cursor: "pointer",
-            }}><KuromiIcon name="signout" size={14} color="rgba(224,210,255,0.25)" /></button>
           </div>
         </div>
       </aside>
@@ -171,7 +211,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   );
 }
 
-// ─── Minimal AI sidebar (full version in next phase) ─────────
+// ─── Minimal AI sidebar ─────────
 function AISidebar({ onClose }: { onClose: () => void }) {
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState([
