@@ -1,54 +1,14 @@
-// SAVE AS: app/api/gmail/[id]/route.ts
-
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-function decodeBody(data: string) {
-  return Buffer.from(
-    data.replace(/-/g, "+").replace(/_/g, "/"),
-    "base64"
-  ).toString("utf-8");
-}
-
-function extractBody(payload: any): string {
-  if (!payload) return "";
-
-  if (payload.mimeType === "text/plain" && payload.body?.data) {
-    return decodeBody(payload.body.data);
-  }
-
-  if (payload.mimeType === "text/html" && payload.body?.data) {
-    return decodeBody(payload.body.data);
-  }
-
-  if (payload.parts) {
-    const plain = payload.parts.find(
-      (p: any) => p.mimeType === "text/plain"
-    );
-    if (plain?.body?.data) return decodeBody(plain.body.data);
-
-    const html = payload.parts.find(
-      (p: any) => p.mimeType === "text/html"
-    );
-    if (html?.body?.data) return decodeBody(html.body.data);
-
-    for (const part of payload.parts) {
-      const result = extractBody(part);
-      if (result) return result;
-    }
-  }
-
-  return "";
-}
-
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { params } = context;
+    const { id } = await params;
 
     const { user, supabase } = await requireUser();
 
@@ -66,7 +26,7 @@ export async function GET(
     }
 
     const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${params.id}?format=full`,
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`,
       {
         headers: {
           Authorization: `Bearer ${profile.gmail_access_token}`,
@@ -90,8 +50,6 @@ export async function GET(
         (h: any) => h.name.toLowerCase() === name.toLowerCase()
       )?.value ?? "";
 
-    const body = extractBody(data.payload);
-
     return NextResponse.json({
       id: data.id,
       subject: get("Subject") || "(no subject)",
@@ -99,7 +57,7 @@ export async function GET(
       to: get("To"),
       date: get("Date"),
       snippet: data.snippet ?? "",
-      body,
+      body: "",
       threadId: data.threadId,
     });
   } catch (err: unknown) {
