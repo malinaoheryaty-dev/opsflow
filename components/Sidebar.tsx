@@ -1,24 +1,49 @@
 "use client";
 
+// SAVE AS: components/Sidebar.tsx
+// Kuromi-inspired OpsFlow sidebar with custom icon support.
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { KuromiIcon, NAV_ICONS } from "@/components/ui/KuromiIcons";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: "⚡" },
-  { href: "/tasks", label: "Tasks", icon: "✅" },
-  { href: "/notes", label: "Notes", icon: "📝" },
-  { href: "/discord", label: "Discord", icon: "🎮" },
-  { href: "/team", label: "Team", icon: "👥" },
-  { href: "/reports", label: "Reports", icon: "📊" },
-  { href: "/settings", label: "Settings", icon: "⚙️" },
-];
+  { href: "/", label: "Dashboard", icon: "dashboard" },
+  { href: "/tasks", label: "Tasks", icon: "tasks" },
+  { href: "/projects", label: "Projects", icon: "reports" },
+  { href: "/clients", label: "Clients", icon: "team" },
+  { href: "/calendar", label: "Calendar", icon: "calendar" },
+  { href: "/inbox", label: "Inbox", icon: "gmail" },
+  { href: "/documents", label: "Documents", icon: "notes" },
+  { href: "/finance", label: "Finance", icon: "star" },
+  { href: "/team", label: "Team", icon: "team" },
+  { href: "/notes", label: "Notes", icon: "notes" },
+  { href: "/ai", label: "AI Assistant", icon: "ai" },
+  { href: "/settings", label: "Settings", icon: "settings" },
+] as const;
 
 const integrations = [
-  { label: "Gmail", icon: "📧" },
-  { label: "Calendar", icon: "📅" },
-  { label: "Discord", icon: "🎮" },
-];
+  { label: "Gmail", icon: "gmail" },
+  { label: "Calendar", icon: "calendar" },
+  { label: "Discord", icon: "discord" },
+] as const;
+
+function Icon({
+  name,
+  active = false,
+}: {
+  name: string;
+  active?: boolean;
+}) {
+  return (
+    <KuromiIcon
+      name={name as keyof typeof NAV_ICONS}
+      size={18}
+      color={active ? "#ffd1ea" : "rgba(224,170,255,0.52)"}
+    />
+  );
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -26,76 +51,91 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Toggle button — always visible */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         title={isOpen ? "Hide sidebar" : "Show sidebar"}
         aria-label={isOpen ? "Hide sidebar" : "Show sidebar"}
-        className={`fixed top-4 z-50 flex items-center justify-center w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 text-xs ${
-          isOpen ? "left-[228px]" : "left-3"
-        }`}
-        style={{ transition: "left 300ms ease" }}
+        className="ops-toggle"
+        style={{
+          left: isOpen ? 236 : 12,
+        }}
       >
         {isOpen ? "◀" : "▶"}
       </button>
 
-      {/* Sidebar */}
       <aside
-        className={`flex-shrink-0 h-screen flex flex-col bg-gray-950 border-r border-white/10 transition-all duration-300 overflow-hidden ${
-          isOpen ? "w-56" : "w-0"
-        }`}
+        className="ops-sidebar"
+        style={{
+          width: isOpen ? 244 : 0,
+        }}
       >
-        <div className="flex flex-col h-full min-w-[224px]">
-          {/* Logo */}
-          <div className="p-5 flex items-center gap-2 border-b border-white/5">
-            <span className="text-cyan-400 text-lg">⚡</span>
-            <span className="text-white font-bold text-base tracking-tight">
-              OpsFlow
-            </span>
+        <div className="ops-sidebar-inner">
+          <div className="ops-logo-card">
+            <div className="ops-logo-mark">
+              <KuromiIcon name="skull" size={24} color="#f5f0ff" />
+            </div>
+
+            <div>
+              <div className="ops-logo-title">OpsFlow</div>
+              <div className="ops-logo-subtitle">KUROMI MODE</div>
+            </div>
           </div>
 
-          {/* Nav */}
-          <nav className="flex-1 p-3 overflow-y-auto">
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">
-              Workspace
-            </p>
-            <ul className="space-y-0.5">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                        isActive
-                          ? "bg-white/10 text-white font-medium"
-                          : "text-gray-400 hover:text-white hover:bg-white/5"
-                      }`}
-                    >
-                      <span className="text-base leading-none">
-                        {item.icon}
-                      </span>
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+          <div className="ops-section-label">Workspace</div>
 
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-2 mt-5 mb-2">
-              Integrations
-            </p>
-            <ul className="space-y-0.5">
-              {integrations.map((i) => (
-                <li key={i.label}>
-                  <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-left">
-                    <span className="text-base leading-none">{i.icon}</span>
-                    {i.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
+          <nav className="ops-nav">
+            {navItems.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/" && pathname.startsWith(item.href));
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`ops-nav-item ${isActive ? "active" : ""}`}
+                >
+                  <span className="ops-nav-icon">
+                    <Icon name={item.icon} active={isActive} />
+                  </span>
+
+                  <span className="ops-nav-text">{item.label}</span>
+
+                  {["/tasks", "/notes", "/team"].includes(item.href) && (
+                    <span className="ops-nav-plus">+</span>
+                  )}
+                </Link>
+              );
+            })}
           </nav>
+
+          <div className="ops-divider" />
+
+          <div className="ops-section-label">Integrations</div>
+
+          <div className="ops-integration-list">
+            {integrations.map((item) => (
+              <button key={item.label} className="ops-integration-item">
+                <span className="ops-nav-icon">
+                  <Icon name={item.icon} />
+                </span>
+                <span>{item.label}</span>
+                <span className="ops-online-dot" />
+              </button>
+            ))}
+          </div>
+
+          <div className="ops-sidebar-footer">
+            <div className="ops-ai-card">
+              <div className="ops-ai-icon">
+                <KuromiIcon name="sparkle" size={18} color="#fff" />
+              </div>
+              <div>
+                <div className="ops-ai-title">Kuromi AI</div>
+                <div className="ops-ai-subtitle">Ready to help</div>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </>
