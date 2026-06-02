@@ -1,11 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import type { CookieOptions } from "@supabase/ssr";
 
-export async function createClient() {
+export async function requireUser() {
   const cookieStore = await cookies();
 
-  return createServerClient(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -13,23 +12,27 @@ export async function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-
-        set(name: string, value: string, options: CookieOptions) {
+        set(name: string, value: string, options: any) {
           try {
             cookieStore.set({ name, value, ...options });
-          } catch {
-            // edge-safe fallback
-          }
+          } catch {}
         },
-
-        remove(name: string, options: CookieOptions) {
+        remove(name: string, options: any) {
           try {
             cookieStore.set({ name, value: "", ...options });
-          } catch {
-            // edge-safe fallback
-          }
+          } catch {}
         },
       },
     }
   );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  return { user, supabase };
 }
