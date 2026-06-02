@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { KuromiIcon, NAV_ICONS } from "@/components/ui/KuromiIcons";
 
-const navItems = [
+const navItems: { href: string; label: string; icon: KuromiIconName }[] = [
   { href: "/", label: "Dashboard", icon: "dashboard" },
   { href: "/tasks", label: "Tasks", icon: "tasks" },
   { href: "/projects", label: "Projects", icon: "reports" },
@@ -21,24 +21,46 @@ const navItems = [
   { href: "/notes", label: "Notes", icon: "notes" },
   { href: "/ai", label: "AI Assistant", icon: "ai" },
   { href: "/settings", label: "Settings", icon: "settings" },
-] as const;
+];
 
-const integrations = [
+const integrations: { label: string; icon: KuromiIconName }[] = [
   { label: "Gmail", icon: "gmail" },
   { label: "Calendar", icon: "calendar" },
   { label: "Discord", icon: "discord" },
-] as const;
+];
+
+type KuromiIconName =
+  | "dashboard"
+  | "tasks"
+  | "notes"
+  | "discord"
+  | "team"
+  | "reports"
+  | "settings"
+  | "gmail"
+  | "calendar"
+  | "ai"
+  | "star"
+  | "plus"
+  | "check"
+  | "skull"
+  | "heart"
+  | "bow"
+  | "sparkle"
+  | "moon"
+  | "signout"
+  | "search";
 
 function Icon({
   name,
   active = false,
 }: {
-  name: string;
+  name: KuromiIconName;
   active?: boolean;
 }) {
   return (
     <KuromiIcon
-      name={name as keyof typeof NAV_ICONS}
+      name={name}
       size={18}
       color={active ? "#ffd1ea" : "rgba(224,170,255,0.52)"}
     />
